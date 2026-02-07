@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lista della spesa - Dieta Blanca</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <h1>Lista della spesa – Dieta Blanca</h1>
+        <p class="subtitle" id="todayLabel">Caricamento…</p>
+      </div>
+      <div class="toggles">
+        <label class="toggle">
+          <input type="checkbox" id="nightShiftToggle" />
+          Turno notturno (spuntino notturno)
+        </label>
+      </div>
+    </header>
+
+    <main class="app-grid">
+      <section class="card">
+        <h2>Dieta di oggi</h2>
+        <div id="todayMeals"></div>
+      </section>
+
+      <section class="card">
+        <h2>Ingredienti mancanti</h2>
+        <div id="missingList"></div>
+      </section>
+
+      <section class="card">
+        <h2>Lista della spesa</h2>
+        <p class="muted">Quantità calcolate sottraendo ciò che hai in dispensa.</p>
+        <div id="shoppingList"></div>
+      </section>
+
+      <section class="card">
+        <h2>Dispensa</h2>
+        <p class="muted">Aggiorna le quantità disponibili. Le modifiche si salvano sul dispositivo.</p>
+        <div class="pantry-actions">
+          <input type="text" id="newItemName" placeholder="Aggiungi ingrediente" />
+          <input type="text" id="newItemUnit" placeholder="Unità (g, ml, pz)" />
+          <button id="addItemButton" type="button">Aggiungi</button>
+        </div>
+        <div id="pantryList"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        Dati dietetici estratti dal file <strong>Blanca.pdf</strong>.
+      </p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
