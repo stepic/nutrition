@@ -568,12 +568,12 @@ function renderPantry() {
     const input = document.createElement("input");
     input.type = "number";
     input.min = "0";
-    input.step = "0.1";
+    input.step = "1";
     input.value = item.qty;
     input.addEventListener("input", () => {
       pantry[item.name].qty = Number(input.value);
       savePantry();
-      updateView();
+      updateSummaries();
     });
 
     const unit = document.createElement("span");
@@ -587,14 +587,20 @@ function renderPantry() {
   });
 }
 
-function updateView() {
+function updateSummaries() {
   const dayKey = getTodayKey();
   const meals = getPlanForDay(dayKey, nightShiftToggle.checked);
-  renderMeals(dayKey, meals);
   const missing = compareInventory(meals);
   renderMissing(missing);
   const weeklyMissing = compareWeeklyInventory(nightShiftToggle.checked);
   renderShoppingList(weeklyMissing);
+}
+
+function updateView() {
+  const dayKey = getTodayKey();
+  const meals = getPlanForDay(dayKey, nightShiftToggle.checked);
+  renderMeals(dayKey, meals);
+  updateSummaries();
   renderPantry();
   savePantry();
 }
