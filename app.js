@@ -467,14 +467,24 @@ function compareWeeklyInventory(includeNightShift) {
   });
 
   choiceCounts.forEach((choice) => {
-    const hasOption = choice.options.some((option) =>
-      option.every((opt) => {
+    const optionSummaries = choice.options.map((option) =>
+      option.map((opt) => {
         ensurePantryItem(opt.name, opt.unit);
-        return (pantry[opt.name].qty || 0) >= opt.qty;
+        const requiredQty = opt.qty * choice.occurrences;
+        const available = pantry[opt.name].qty || 0;
+        const shortage = Math.max(requiredQty - available, 0);
+        return {
+          ...opt,
+          requiredQty,
+          shortage,
+        };
       })
     );
+    const hasOption = optionSummaries.some((option) =>
+      option.every((opt) => opt.shortage <= 0)
+    );
     if (!hasOption) {
-      missing.push({ type: "choice", ...choice });
+      missing.push({ type: "choice", ...choice, optionSummaries });
     }
   });
 
@@ -520,10 +530,15 @@ function renderShoppingList(missing) {
     if (item.type === "item") {
       li.textContent = `${item.name} – ${formatQty(item.shortage, item.unit)}`;
     } else if (item.type === "choice") {
-      const options = item.options
+      const options = (item.optionSummaries || item.options)
         .map((option) =>
           option
-            .map((opt) => `${opt.name} (${formatQty(opt.qty, opt.unit)})`)
+            .map((opt) => {
+              if (opt.requiredQty !== undefined) {
+                return `${opt.name} (${formatQty(opt.shortage, opt.unit)} da comprare)`;
+              }
+              return `${opt.name} (${formatQty(opt.qty, opt.unit)})`;
+            })
             .join(" + ")
         )
         .join(" oppure ");
