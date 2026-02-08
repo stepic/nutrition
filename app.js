@@ -414,6 +414,73 @@ function compareInventory(meals) {
   return missing;
 }
 
+function compareWeeklyInventory(includeNightShift) {
+  const totals = new Map();
+  const choiceCounts = new Map();
+
+  const addItem = (item, multiplier = 1) => {
+    ensurePantryItem(item.name, item.unit);
+    const key = item.name;
+    const entry = totals.get(key) || { ...item, qty: 0 };
+    entry.qty += item.qty * multiplier;
+    totals.set(key, entry);
+  };
+
+  const addChoice = (choice) => {
+    const key = choice.label;
+    const count = choiceCounts.get(key) || { ...choice, occurrences: 0 };
+    count.occurrences += 1;
+    choiceCounts.set(key, count);
+  };
+
+  Object.values(dietPlan).forEach((day) => {
+    Object.values(day).forEach((ingredients) => {
+      ingredients.forEach((ingredient) => {
+        if (ingredient.type === "item") {
+          addItem(ingredient);
+        } else if (ingredient.type === "choice") {
+          addChoice(ingredient);
+        }
+      });
+    });
+  });
+
+  if (includeNightShift) {
+    nightShiftSnack.forEach((ingredient) => {
+      if (ingredient.type === "item") {
+        addItem(ingredient, 7);
+      } else if (ingredient.type === "choice") {
+        for (let i = 0; i < 7; i += 1) {
+          addChoice(ingredient);
+        }
+      }
+    });
+  }
+
+  const missing = [];
+  totals.forEach((item) => {
+    const available = pantry[item.name].qty || 0;
+    const shortage = item.qty - available;
+    if (shortage > 0) {
+      missing.push({ type: "item", ...item, shortage });
+    }
+  });
+
+  choiceCounts.forEach((choice) => {
+    const hasOption = choice.options.some((option) =>
+      option.every((opt) => {
+        ensurePantryItem(opt.name, opt.unit);
+        return (pantry[opt.name].qty || 0) >= opt.qty;
+      })
+    );
+    if (!hasOption) {
+      missing.push({ type: "choice", ...choice });
+    }
+  });
+
+  return missing;
+}
+
 function renderMissing(missing) {
   if (!missing.length) {
     missingList.innerHTML = `<p class="success">Hai tutto il necessario per oggi!</p>`;
@@ -443,7 +510,7 @@ function renderMissing(missing) {
 
 function renderShoppingList(missing) {
   if (!missing.length) {
-    shoppingList.innerHTML = `<p class="success">Nessun acquisto necessario per oggi.</p>`;
+    shoppingList.innerHTML = `<p class="success">Nessun acquisto necessario per la settimana.</p>`;
     return;
   }
 
@@ -460,7 +527,8 @@ function renderShoppingList(missing) {
             .join(" + ")
         )
         .join(" oppure ");
-      li.innerHTML = `<strong>${item.label}:</strong> ${options}`;
+      const occurrences = item.occurrences ? ` (x${item.occurrences})` : "";
+      li.innerHTML = `<strong>${item.label}${occurrences}:</strong> ${options}`;
     }
     list.appendChild(li);
   });
@@ -510,7 +578,8 @@ function updateView() {
   renderMeals(dayKey, meals);
   const missing = compareInventory(meals);
   renderMissing(missing);
-  renderShoppingList(missing);
+  const weeklyMissing = compareWeeklyInventory(nightShiftToggle.checked);
+  renderShoppingList(weeklyMissing);
   renderPantry();
   savePantry();
 }
