@@ -62,6 +62,21 @@ body {
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
 }
 
+.today-card {
+  display: flex;
+  flex-direction: column;
+}
+
+#todayMeals {
+  flex: 1;
+}
+
+.today-toggle {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e1e4ea;
+}
+
 .card h2 {
   margin-top: 0;
 }

@@ -12,18 +12,18 @@
         <h1>Lista della spesa – Dieta Blanca</h1>
         <p class="subtitle" id="todayLabel">Caricamento…</p>
       </div>
-      <div class="toggles">
-        <label class="toggle">
-          <input type="checkbox" id="nightShiftToggle" />
-          Turno notturno (spuntino notturno)
-        </label>
-      </div>
     </header>
 
     <main class="app-grid">
-      <section class="card">
+      <section class="card today-card">
         <h2>Dieta di oggi</h2>
         <div id="todayMeals"></div>
+        <div class="today-toggle">
+          <label class="toggle">
+            <input type="checkbox" id="nightShiftToggle" />
+            Turno notturno (spuntino notturno)
+          </label>
+        </div>
       </section>
 
       <section class="card">

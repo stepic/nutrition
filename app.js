@@ -348,7 +348,16 @@ function renderMeals(dayKey, meals) {
     return;
   }
 
-  Object.entries(meals).forEach(([mealName, ingredients]) => {
+  const availableMeals = Object.entries(meals).filter(([, ingredients]) =>
+    Array.isArray(ingredients) && ingredients.length > 0
+  );
+
+  if (!availableMeals.length) {
+    todayMeals.innerHTML = `<p class="muted">Libero</p>`;
+    return;
+  }
+
+  availableMeals.forEach(([mealName, ingredients]) => {
     const section = document.createElement("div");
     section.className = "meal";
     const title = document.createElement("h3");
