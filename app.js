@@ -243,13 +243,10 @@ const dietPlan = {
       { type: "item", name: "Finocchio", qty: 1, unit: "pz" },
     ],
     cena: [
-      { type: "item", name: "Cena libera", qty: 1, unit: "nota" },
     ],
   },
   "Domenica": {
-    colazione: [
-      { type: "item", name: "Cena libera", qty: 1, unit: "nota" },
-    ],
+    colazione: [],
   },
 };
 
